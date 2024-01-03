@@ -113,7 +113,9 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
         try:
             # Apply sigmoid to predictions
             pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
-            
+            print(dataGT)
+            print("_________________________")
+            print(pred_probs)
             # Calculate ROC curve for each class
             fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
             roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
@@ -186,7 +188,7 @@ class Evaluator:
                 
                 # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
-                print(output, "+++++++++++++++++++++++++++++++++++++++",target)
+                # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
                 for metric in self.metrics:
                     args = [output, target, *self.metrics[metric]['args']]    
                     metric_func = globals()[self.metrics[metric]['func']]
