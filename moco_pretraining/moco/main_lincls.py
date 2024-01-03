@@ -30,6 +30,8 @@ from training_tools.meters import ProgressMeter
 import aihc_utils.storage_util as storage_util
 import aihc_utils.image_transform as image_transform
 
+from utils.load_dataset import load_dataset
+
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -128,6 +130,13 @@ parser.add_argument('--optimizer', dest='optimizer', default='adam',
 parser.add_argument('--aug-setting', default='chexpert',
                     choices=['moco_v1', 'moco_v2', 'chexpert'],
                     help='version of data augmentation to use')
+
+parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
+                        help='dataset path')
+
+parser.add_argument("--train_list", default=None, type=str, help="file for train list")
+parser.add_argument("--val_list", default=None, type=str, help="file for val list")
+parser.add_argument("--test_list", default=None, type=str, help="file for test list")
                     
 best_metrics = {'acc@1': {'func': 'topk_acc', 'format': ':6.2f', 'args': [1]}}
                 # 'acc@5': {'func': 'topk_acc', 'format': ':6.2f', 'args': [5]},
@@ -178,6 +187,8 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     global best_metric_val
     if args.binary:
         best_metrics.update({'auc' : {'func': 'compute_auc_binary', 'format': ':6.2f', 'args': []}})
+    elif args.multi_labels:
+        best_metrics.update({'auc' : {'func': 'computeAUROC', 'format': ':6.2f', 'args': []}})
     args.gpu = gpu
 
     # suppress printing if not master
@@ -207,14 +218,18 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         if name not in ['fc.weight', 'fc.bias']:
             param.requires_grad = False
 
-    num_classes = len(os.listdir(args.val_data)) #assume in imagenet format, so length == num folders/classes
-    if num_classes == 2 and not args.binary:
-        raise ValueError(f'Folder has {num_classes} classes, but you did not use "--binary" flag')
-    elif num_classes != 2 and args.binary:
-        raise ValueError(f'Folder has {num_classes} classes, but you used "--binary" flag')
+    # num_classes = len(os.listdir(args.val_data)) #assume in imagenet format, so length == num folders/classes
+    # if num_classes == 2 and not args.binary:
+    #     raise ValueError(f'Folder has {num_classes} classes, but you did not use "--binary" flag')
+    # elif num_classes != 2 and args.binary:
+    #     raise ValueError(f'Folder has {num_classes} classes, but you used "--binary" flag')
 
     # init the fc layer
+    num_classes = 14
+    
     if args.binary:
+        model.fc = nn.Linear(model.fc.in_features, num_classes)
+    elif args.multi_labels:
         model.fc = nn.Linear(model.fc.in_features, num_classes)
     model.fc.weight.data.normal_(mean=0.0, std=0.01)
     model.fc.bias.data.zero_()
@@ -273,7 +288,10 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
             model = torch.nn.DataParallel(model).cuda()
 
     # define loss function (criterion) and optimizer
-    criterion = nn.CrossEntropyLoss().cuda(args.gpu)
+    if args.multi_labels:
+        criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+    else:
+        criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
     # optimize only the linear classifier
     parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
@@ -326,54 +344,57 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     # Data loading code
     # traindir = os.path.join(args.data, 'train')
     # valdir = os.path.join(args.data, 'val')
+    train_loader = load_dataset(split='train', args=args)
+    val_loader = load_dataset(split='val', args=args)
+    test_loader = load_dataset(split='test', args=args)
 
-    traindir = args.train_data
-    valdir = args.val_data
-    testdir = args.test_data
+    # traindir = args.train_data
+    # valdir = args.val_data
+    # testdir = args.test_data
 
-    if args.aug_setting == 'moco_v2':
-        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-        train_augmentation = [
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            normalize,
-        ]
+    # if args.aug_setting == 'moco_v2':
+    #     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                                  std=[0.229, 0.224, 0.225])
+    #     train_augmentation = [
+    #         transforms.RandomResizedCrop(224),
+    #         transforms.RandomHorizontalFlip(),
+    #         transforms.ToTensor(),
+    #         normalize,
+    #     ]
 
-        test_augmentation = [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            normalize,
-        ]
-    elif args.aug_setting == 'chexpert':
-        train_augmentation = image_transform.get_transform(args, training=True)
-        test_augmentation = image_transform.get_transform(args, training=False)
+    #     test_augmentation = [
+    #         transforms.Resize(256),
+    #         transforms.CenterCrop(224),
+    #         transforms.ToTensor(),
+    #         normalize,
+    #     ]
+    # elif args.aug_setting == 'chexpert':
+    #     train_augmentation = image_transform.get_transform(args, training=True)
+    #     test_augmentation = image_transform.get_transform(args, training=False)
 
 
-    train_dataset = datasets.ImageFolder(
-        traindir,
-        transforms.Compose(train_augmentation))
+    # train_dataset = datasets.ImageFolder(
+    #     traindir,
+    #     transforms.Compose(train_augmentation))
 
     if args.distributed:
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
+        train_sampler = torch.utils.data.distributed.DistributedSampler(train_loader)
     else:
         train_sampler = None
 
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None),
-        num_workers=args.workers, pin_memory=True, sampler=train_sampler)
+    # train_loader = torch.utils.data.DataLoader(
+    #     train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None),
+    #     num_workers=args.workers, pin_memory=True, sampler=train_sampler)
 
-    val_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(valdir, transforms.Compose(test_augmentation)),
-        batch_size=args.batch_size, shuffle=False,
-        num_workers=args.workers, pin_memory=True)
+    # val_loader = torch.utils.data.DataLoader(
+    #     datasets.ImageFolder(valdir, transforms.Compose(test_augmentation)),
+    #     batch_size=args.batch_size, shuffle=False,
+    #     num_workers=args.workers, pin_memory=True)
 
-    test_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(testdir, transforms.Compose(test_augmentation)),
-        batch_size=args.batch_size, shuffle=False,
-        num_workers=args.workers, pin_memory=True)
+    # test_loader = torch.utils.data.DataLoader(
+    #     datasets.ImageFolder(testdir, transforms.Compose(test_augmentation)),
+    #     batch_size=args.batch_size, shuffle=False,
+    #     num_workers=args.workers, pin_memory=True)
 
     evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
                                      {'train': train_loader,\

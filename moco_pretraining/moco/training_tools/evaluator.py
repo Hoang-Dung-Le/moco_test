@@ -4,6 +4,7 @@ import random
 import time
 import warnings
 import sys
+from sklearn.metrics import roc_auc_score, roc_curve
 
 import numpy as np
 import torch
@@ -75,6 +76,32 @@ def compute_auc_binary(output, target):
     except:
         return -1
     return auc
+
+
+@decorator_detach_tensor
+def computeAUROC(dataGT, dataPRED, classCount=14):
+    outAUROC = []
+    fprs, tprs, thresholds = [], [], []
+    
+    for i in range(classCount):
+        try:
+            # Calculate ROC curve for each class
+            fpr, tpr, threshold = roc_curve(dataGT[:, i], dataPRED[:, i])
+            roc_auc = roc_auc_score(dataGT[:, i], dataPRED[:, i])
+            outAUROC.append(roc_auc)
+
+            # Store FPR, TPR, and thresholds for each class
+            fprs.append(fpr)
+            tprs.append(tpr)
+            thresholds.append(threshold)
+        except:
+            outAUROC.append(0.)
+
+    auc_each_class_array = np.array(outAUROC)
+    print(auc_each_class_array)
+    result = np.average(auc_each_class_array[auc_each_class_array != 0])
+
+    return result
 
 
 class Evaluator:
@@ -167,10 +194,10 @@ class Evaluator:
         # 1/0
         # from torchmetrics.functional.classification import BinaryConfusionMatrix
         # matrix = multiclass_confusion_matrix(all_output, all_gt, num_classes=2)
-        cf_matrix = confusion_matrix(all_gt, y)
-        print(cf_matrix)
-        print(classification_report(all_gt, y))
-        print(accuracy_score(all_gt, y))
+        # cf_matrix = confusion_matrix(all_gt, y)
+        # print(cf_matrix)
+        # print(classification_report(all_gt, y))
+        # print(accuracy_score(all_gt, y))
         # from sklearn.metrics import ConfusionMatrixDisplay
         # disp = ConfusionMatrixDisplay(confusion_matrix=cf_matrix)
 
