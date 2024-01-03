@@ -149,6 +149,7 @@ class Evaluator:
                 all_gt.append(target.cpu())        
 
                 # compute output
+                print(images.shape)
                 output = self.model(images)
                 all_output.append(output.cpu())
                 
