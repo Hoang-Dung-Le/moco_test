@@ -99,9 +99,9 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
 
     auc_each_class_array = np.array(outAUROC)
     # print(auc_each_class_array)\
-    print(auc_each_class_array)
+    # print(auc_each_class_array)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
-    print(result)
+    # print(result)
     return result
 
 
@@ -160,7 +160,7 @@ class Evaluator:
                 
                 # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
-                # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
+                print(output, "+++++++++++++++++++++++++++++++++++++++",target)
                 for metric in self.metrics:
                     args = [output, target, *self.metrics[metric]['args']]    
                     metric_func = globals()[self.metrics[metric]['func']]

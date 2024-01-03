@@ -427,7 +427,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch, args, best_metrics)
 
-        evaluator.evaluate('valid', epoch)
+        # evaluator.evaluate('valid', epoch)
         evaluator.evaluate('test', 0)       # But we should technically not optimize for this
 
         is_best = evaluator.metric_best_vals[args.best_metric] > best_metric_val
