@@ -496,7 +496,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
         all_gt.append(target.cpu().detach().numpy())
 
         # compute output
+        images = torch.unsqueeze(images, 0)
         output = model(images)
+        output = torch.squeeze(output, 0)
         all_output.append(output.cpu().detach().numpy())
 
         loss = criterion(output, target)
