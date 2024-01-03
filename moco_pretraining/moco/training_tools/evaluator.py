@@ -78,6 +78,32 @@ def compute_auc_binary(output, target):
     return auc
 
 
+# @decorator_detach_tensor
+# def computeAUROC(dataPRED, dataGT, classCount=14):
+#     outAUROC = []
+#     fprs, tprs, thresholds = [], [], []
+    
+#     for i in range(classCount):
+#         try:
+#             # Calculate ROC curve for each class
+#             fpr, tpr, threshold = roc_curve(dataGT[:, i], dataPRED[:, i])
+#             roc_auc = roc_auc_score(dataGT[:, i], dataPRED[:, i])
+#             outAUROC.append(roc_auc)
+
+#             # Store FPR, TPR, and thresholds for each class
+#             fprs.append(fpr)
+#             tprs.append(tpr)
+#             thresholds.append(threshold)
+#         except:
+#             outAUROC.append(0.)
+
+#     auc_each_class_array = np.array(outAUROC)
+#     # print(auc_each_class_array)\
+#     # print(auc_each_class_array)
+#     result = np.average(auc_each_class_array[auc_each_class_array != 0])
+#     # print(result)
+#     return result
+
 @decorator_detach_tensor
 def computeAUROC(dataPRED, dataGT, classCount=14):
     outAUROC = []
@@ -85,9 +111,12 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
     
     for i in range(classCount):
         try:
+            # Apply sigmoid to predictions
+            pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
+            
             # Calculate ROC curve for each class
-            fpr, tpr, threshold = roc_curve(dataGT[:, i], dataPRED[:, i])
-            roc_auc = roc_auc_score(dataGT[:, i], dataPRED[:, i])
+            fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
+            roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
             outAUROC.append(roc_auc)
 
             # Store FPR, TPR, and thresholds for each class
@@ -98,10 +127,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
             outAUROC.append(0.)
 
     auc_each_class_array = np.array(outAUROC)
-    # print(auc_each_class_array)\
-    # print(auc_each_class_array)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
-    # print(result)
     return result
 
 
