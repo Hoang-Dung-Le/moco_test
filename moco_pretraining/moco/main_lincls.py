@@ -511,7 +511,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
             eval_args = [output, target, *best_metrics[metric]['args']]
             metric_func = eval_tools.__dict__[best_metrics[metric]['func']]
             result = metric_func(*eval_args)
-            
+            print(result)
             metric_meters[metric].update(result, images.size(0))
 
         # compute gradient and do SGD step
