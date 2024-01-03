@@ -79,7 +79,7 @@ def compute_auc_binary(output, target):
 
 
 @decorator_detach_tensor
-def computeAUROC(dataGT, dataPRED, classCount=14):
+def computeAUROC(dataPRED, dataGT, classCount=14):
     outAUROC = []
     fprs, tprs, thresholds = [], [], []
     
