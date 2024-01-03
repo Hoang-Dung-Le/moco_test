@@ -488,6 +488,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
+        print(images.shape)
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
