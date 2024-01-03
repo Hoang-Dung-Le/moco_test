@@ -131,6 +131,9 @@ parser.add_argument('--aug-setting', default='chexpert',
                     choices=['moco_v1', 'moco_v2', 'chexpert'],
                     help='version of data augmentation to use')
 
+parser.add_argument('--num_classes', dest='num_classes', type=int, default=14,
+                    help='Number of classes')
+
 parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
                         help='dataset path')
 
