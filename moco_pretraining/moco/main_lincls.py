@@ -393,19 +393,19 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     else:
         train_sampler = None
 
-    # train_loader = torch.utils.data.DataLoader(
-    #     train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None),
-    #     num_workers=args.workers, pin_memory=True, sampler=train_sampler)
+    train_loader = torch.utils.data.DataLoader(
+        train_loader, batch_size=args.batch_size, shuffle=(train_sampler is None),
+        num_workers=args.workers, pin_memory=True, sampler=train_sampler)
 
-    # val_loader = torch.utils.data.DataLoader(
-    #     datasets.ImageFolder(valdir, transforms.Compose(test_augmentation)),
-    #     batch_size=args.batch_size, shuffle=False,
-    #     num_workers=args.workers, pin_memory=True)
+    val_loader = torch.utils.data.DataLoader(
+        val_loader,
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
 
-    # test_loader = torch.utils.data.DataLoader(
-    #     datasets.ImageFolder(testdir, transforms.Compose(test_augmentation)),
-    #     batch_size=args.batch_size, shuffle=False,
-    #     num_workers=args.workers, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(
+        test_loader,
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
 
     evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
                                      {'train': train_loader,\
