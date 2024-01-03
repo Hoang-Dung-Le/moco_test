@@ -190,7 +190,7 @@ class Evaluator:
         #     print(torch.Tensor(tensor))
 
         # y = [torch.argmax(torch.Tensor(tensor)).item() for tensor in all_output]
-        y = [torch.argmax(torch.tensor([tensor])).item() for tensor in all_output] 
+        # y = [torch.argmax(torch.tensor([tensor])).item() for tensor in all_output] 
         
         all_gt = np.concatenate(all_gt)
         # print(y)
