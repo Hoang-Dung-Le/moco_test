@@ -397,10 +397,10 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         train_loader, batch_size=args.batch_size, shuffle=(train_sampler is None),
         num_workers=args.workers, pin_memory=True, sampler=train_sampler)
 
-    val_loader = torch.utils.data.DataLoader(
-        val_loader,
-        batch_size=args.batch_size, shuffle=False,
-        num_workers=args.workers, pin_memory=True)
+    # val_loader = torch.utils.data.DataLoader(
+    #     val_loader,
+    #     batch_size=args.batch_size, shuffle=False,
+    #     num_workers=args.workers, pin_memory=True)
 
     test_loader = torch.utils.data.DataLoader(
         test_loader,
@@ -413,7 +413,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                                       'test': test_loader}, args)
 
     if args.evaluate:
-        evaluator.evaluate('valid', 0)
+        # evaluator.evaluate('valid', 0)
         evaluator.evaluate('test', 0)
         return
     
@@ -488,7 +488,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
-        print(images.shape)
+        # print(images.shape)
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
@@ -497,9 +497,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
         all_gt.append(target.cpu().detach().numpy())
 
         # compute output
-        images = torch.unsqueeze(images, 0)
+        # images = torch.unsqueeze(images, 0)
         output = model(images)
-        output = torch.squeeze(output, 0)
+        # output = torch.squeeze(output, 0)
         all_output.append(output.cpu().detach().numpy())
 
         loss = criterion(output, target)

@@ -150,10 +150,10 @@ class Evaluator:
                 all_gt.append(target.cpu())        
 
                 # compute output
-                images = torch.unsqueeze(images, 0)
+                # images = torch.unsqueeze(images, 0)
                 # print(images.shape)
                 output = self.model(images)
-                output = torch.squeeze(output, 0)
+                # output = torch.squeeze(output, 0)
                 all_output.append(output.cpu())
                 
                 loss = self.loss_func(output, target)
