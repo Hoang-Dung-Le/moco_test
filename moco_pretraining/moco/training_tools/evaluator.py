@@ -152,6 +152,7 @@ class Evaluator:
                 images = torch.unsqueeze(images, 0)
                 print(images.shape)
                 output = self.model(images)
+                output = torch.squeeze(output, 0)
                 all_output.append(output.cpu())
                 
                 loss = self.loss_func(output, target)
