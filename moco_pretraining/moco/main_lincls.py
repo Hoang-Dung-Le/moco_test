@@ -144,9 +144,14 @@ parser.add_argument("--test_list", default=None, type=str, help="file for test l
 parser.add_argument('--multi_labels', default=True, type=bool,
                     help='multi_labels')
                     
-best_metrics = {'acc@1': {'func': 'topk_acc', 'format': ':6.2f', 'args': [1]}}
-                # 'acc@5': {'func': 'topk_acc', 'format': ':6.2f', 'args': [5]},
-                #'auc': {'func': 'compute_auc_binary', 'format': ':6.2f', 'args': []}}
+# best_metrics = {'acc@1': {'func': 'topk_acc', 'format': ':6.2f', 'args': [1]}}
+#                 # 'acc@5': {'func': 'topk_acc', 'format': ':6.2f', 'args': [5]},
+#                 #'auc': {'func': 'compute_auc_binary', 'format': ':6.2f', 'args': []}}
+
+best_metrics = {'auc' : {'func': 'computeAUROC', 'format': ':6.2f', 'args': []}}
+
+
+
 best_metric_val = 0
 
 
