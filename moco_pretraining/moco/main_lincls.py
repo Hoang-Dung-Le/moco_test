@@ -105,7 +105,7 @@ parser.add_argument('--save-epoch', dest='save_epoch', type=int, default=1,
                     help='Number of epochs per checkpoint save')
 parser.add_argument('--from-imagenet', dest='from_imagenet', action='store_true',
                     help='use pre-trained ImageNet model')
-parser.add_argument('--best-metric', dest='best_metric', type=str, default='acc@1',
+parser.add_argument('--best-metric', dest='best_metric', type=str, default='auc',
                     help='metric to use for best model')
 parser.add_argument('--semi-supervised', dest='semi_supervised', action='store_true',
                     help='allow the entire model to fine-tune')
