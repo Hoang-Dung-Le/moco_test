@@ -137,6 +137,9 @@ parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/06141
 parser.add_argument("--train_list", default=None, type=str, help="file for train list")
 parser.add_argument("--val_list", default=None, type=str, help="file for val list")
 parser.add_argument("--test_list", default=None, type=str, help="file for test list")
+
+parser.add_argument('--multi_labels', default=True, type=bool,
+                    help='multi_labels')
                     
 best_metrics = {'acc@1': {'func': 'topk_acc', 'format': ':6.2f', 'args': [1]}}
                 # 'acc@5': {'func': 'topk_acc', 'format': ':6.2f', 'args': [5]},
