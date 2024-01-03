@@ -98,7 +98,7 @@ def computeAUROC(dataGT, dataPRED, classCount=14):
             outAUROC.append(0.)
 
     auc_each_class_array = np.array(outAUROC)
-    print(auc_each_class_array)
+    # print(auc_each_class_array)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
 
     return result
@@ -150,7 +150,7 @@ class Evaluator:
 
                 # compute output
                 images = torch.unsqueeze(images, 0)
-                print(images.shape)
+                # print(images.shape)
                 output = self.model(images)
                 output = torch.squeeze(output, 0)
                 all_output.append(output.cpu())
@@ -173,6 +173,7 @@ class Evaluator:
 
                 if i % self.args.print_freq == 0:
                     progress.display(i)
+                    break
 
             # TODO: this should also be done with the ProgressMeter
             # print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
@@ -180,6 +181,7 @@ class Evaluator:
             progress.display(i + 1)
 
         all_output = np.concatenate(all_output)
+        print(all_output)
         # _, preds = torch.max(all_output, 1)
         # for i in all_output:
         # y = [torch.max(all_output).item()]
