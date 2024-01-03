@@ -100,7 +100,7 @@ def computeAUROC(dataGT, dataPRED, classCount=14):
     auc_each_class_array = np.array(outAUROC)
     # print(auc_each_class_array)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
-
+    print(result)
     return result
 
 
