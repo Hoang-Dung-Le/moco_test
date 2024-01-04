@@ -154,8 +154,6 @@ best_metrics = {'auc' : {'func': 'computeAUROC', 'format': ':6.2f', 'args': []}}
 
 best_metric_val = 0
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category='UndefinedMetricWarning')
 
 
 def main():

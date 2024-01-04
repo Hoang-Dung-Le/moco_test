@@ -22,6 +22,10 @@ from .combiner import detach_tensor
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
 
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=UndefinedMetricWarning, message="No positive samples in y_true")
+
 '''
 def pred_accuracy(output, target, k):
     """Computes the accuracy over the k top predictions for the specified values of k"""
