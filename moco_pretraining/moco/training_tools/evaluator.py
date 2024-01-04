@@ -202,7 +202,6 @@ class Evaluator:
 
                 if i % self.args.print_freq == 0:
                     progress.display(i)
-                    break
 
             # TODO: this should also be done with the ProgressMeter
             # print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
