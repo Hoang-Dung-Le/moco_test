@@ -113,9 +113,9 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
         try:
             # Apply sigmoid to predictions
             pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
-            print(dataGT)
-            print("_________________________")
-            print(pred_probs)
+            # print(dataGT)
+            # print("_________________________")
+            # print(pred_probs)
             # Calculate ROC curve for each class
             fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
             roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
