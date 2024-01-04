@@ -108,18 +108,17 @@ def compute_auc_binary(output, target):
 def computeAUROC(dataPRED, dataGT, classCount=14):
     outAUROC = []
     fprs, tprs, thresholds = [], [], []
-
+    
     for i in range(classCount):
         try:
             # Apply sigmoid to predictions
             pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
-
-            # Bỏ qua warning nếu không có mẫu dương trong y_true
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
-                fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
-                roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
-
+            # print(dataGT)
+            # print("_________________________")
+            # print(pred_probs)
+            # Calculate ROC curve for each class
+            fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
+            roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
             outAUROC.append(roc_auc)
 
             # Store FPR, TPR, and thresholds for each class
