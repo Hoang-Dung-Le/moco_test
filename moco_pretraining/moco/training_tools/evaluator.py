@@ -22,7 +22,7 @@ from .combiner import detach_tensor
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
 
-from warnings import UndefinedMetricWarning
+from sklearn.exceptions import UndefinedMetricWarning
 
 
 with warnings.catch_warnings():
