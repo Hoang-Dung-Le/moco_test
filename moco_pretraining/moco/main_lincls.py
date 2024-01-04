@@ -155,6 +155,14 @@ best_metrics = {'auc' : {'func': 'computeAUROC', 'format': ':6.2f', 'args': []}}
 best_metric_val = 0
 
 
+# from sklearn.exceptions import UndefinedMetricWarning
+
+
+# with warnings.catch_warnings():
+#     warnings.filterwarnings("ignore", category=UndefinedMetricWarning, message="No positive samples in y_true")
+import warnings
+warnings.filterwarnings('ignore')
+
 
 def main():
 

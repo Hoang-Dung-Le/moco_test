@@ -22,11 +22,6 @@ from .combiner import detach_tensor
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
 
-from sklearn.exceptions import UndefinedMetricWarning
-
-
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", category=UndefinedMetricWarning, message="No positive samples in y_true")
 
 '''
 def pred_accuracy(output, target, k):
