@@ -132,6 +132,20 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
     auc_each_class_array = np.array(outAUROC)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
     return result
+# @decorator_detach_tensor
+# def computeAUROC(dataPRED,dataGT, classCount=14):
+#     outAUROC = []
+#     # print(dataGT.shape, dataPRED.shape)
+#     for i in range(classCount):
+#         try:
+    
+#             print("dataGT: ", dataGT)
+#             print("datapred: ", dataPRED)
+#             outAUROC.append(roc_auc_score(dataGT[:, i], dataPRED[:, i]))
+#         except:
+#             outAUROC.append(0.)
+#     print("AUC: ", outAUROC)
+#     return outAUROC
 
 
 class Evaluator:
@@ -170,6 +184,9 @@ class Evaluator:
         all_output = []
         all_gt = []
 
+        outputs = []
+        targets = []
+
         with torch.no_grad():
             end = time.time()
             for i, (images, target) in enumerate(loader):
@@ -190,14 +207,16 @@ class Evaluator:
                 # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
                 # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
-                for metric in self.metrics:
-                    args = [output, target, *self.metrics[metric]['args']]    
-                    metric_func = globals()[self.metrics[metric]['func']]
-                    result = metric_func(*args)
+                # for metric in self.metrics:
+                #     args = [output, target, *self.metrics[metric]['args']]    
+                #     metric_func = globals()[self.metrics[metric]['func']]
+                #     result = metric_func(*args)
                     
-                    metric_meters[metric].update(result, images.size(0))
+                #     metric_meters[metric].update(result, images.size(0))
 
                 # measure elapsed time
+                outputs.append(output)
+                targets.append(target)
                 batch_time.update(time.time() - end)
                 end = time.time()
 
@@ -238,8 +257,12 @@ class Evaluator:
 
         # disp.plot(cmap=plt.cm.Blues)
         # plt.show()
+
+        targets = torch.cat(targets, dim=0).cpu().numpy()
+
         for metric in self.metrics:
-            args = [all_output, all_gt, *self.metrics[metric]['args']]    
+            # args = [all_output, all_gt, *self.metrics[metric]['args']]    
+            args = [outputs, targets, *self.metrics[metric]['args']]    
             metric_func = globals()[self.metrics[metric]['func']]
             result = metric_func(*args)
             
