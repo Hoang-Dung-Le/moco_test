@@ -175,19 +175,19 @@ class Evaluator:
         batch_time = AverageMeter('Time', ':6.3f')
         losses = AverageMeter('Loss', ':.4e')
 
-        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-                                                    for metric in self.metrics}
-        list_meters = [metric_meters[m] for m in metric_meters]
-
-        progress = ProgressMeter(
-            len(loader),
-            [batch_time, losses, *list_meters],
-            prefix=f'{eval_type}@Epoch {epoch}: ')
+        # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+        #                                             for metric in self.metrics}
+        # list_meters = [metric_meters[m] for m in metric_meters]
 
         # progress = ProgressMeter(
         #     len(loader),
-        #     [batch_time, losses],
+        #     [batch_time, losses, *list_meters],
         #     prefix=f'{eval_type}@Epoch {epoch}: ')
+
+        progress = ProgressMeter(
+            len(loader),
+            [batch_time, losses],
+            prefix=f'{eval_type}@Epoch {epoch}: ')
 
         # switch to evaluate mode
         self.model.eval()
@@ -273,10 +273,20 @@ class Evaluator:
         # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
+
+        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+                                                    for metric in self.metrics}
+        list_meters = [metric_meters[m] for m in metric_meters]
+
+        progress = ProgressMeter(
+            len(loader),
+            [batch_time, losses, *list_meters],
+            prefix=f'{eval_type}@Epoch {epoch}: ')
+
         targets = torch.cat(targets, dim=0).cpu().numpy()
         outputs = torch.cat(outputs, dim=0).cpu().numpy()
-        print(outputs.shape)
-        print(np.array(targets).shape)
+        # print(outputs.shape)
+        # print(np.array(targets).shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
             args = [outputs, targets, *self.metrics[metric]['args']]    
