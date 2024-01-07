@@ -269,7 +269,7 @@ class Evaluator:
         # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
-        print(all_output.shape)
+        print(all_gt.shape)
         print(outputs.shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
