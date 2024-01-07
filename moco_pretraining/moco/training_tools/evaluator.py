@@ -130,8 +130,9 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
             outAUROC.append(0.)
 
     auc_each_class_array = np.array(outAUROC)
+    print(auc_each_class_array)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
-    print(result)
+    # print(result)
     return result
 # @decorator_detach_tensor
 # def computeAUROC(dataPRED,dataGT, classCount=14):
