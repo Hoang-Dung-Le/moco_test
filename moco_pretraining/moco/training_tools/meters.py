@@ -45,6 +45,7 @@ class ProgressMeter(object):
 
     def display(self, batch, summary=False):
         entries = [self.prefix + self.batch_fmtstr.format(batch)]
+        print(entries)
         if not summary:
             entries += [str(meter) for meter in self.meters]
             print('\t'.join(entries))
