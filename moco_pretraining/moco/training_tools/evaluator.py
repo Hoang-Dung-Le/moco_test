@@ -225,8 +225,8 @@ class Evaluator:
                     metric_meters[metric].update(result, images.size(0))
 
                 # measure elapsed time
-                outputs.append(output)
-                targets.append(target)
+                outputs.append(output.cpu())
+                targets.append(target.cpu())
                 batch_time.update(time.time() - end)
                 end = time.time()
 
