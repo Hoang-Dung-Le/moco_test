@@ -273,6 +273,7 @@ class Evaluator:
         # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
+        targets = torch.cat(targets, dim=0).cpu().numpy()
         print(all_gt.shape)
         print(np.array(targets).shape)
         for metric in self.metrics:
