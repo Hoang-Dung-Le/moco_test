@@ -274,7 +274,8 @@ class Evaluator:
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
         targets = torch.cat(targets, dim=0).cpu().numpy()
-        print(all_gt.shape)
+        outputs = torch.cat(outputs, dim=0).cpu().numpy()
+        print(outputs.shape)
         print(np.array(targets).shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
