@@ -170,13 +170,18 @@ class Evaluator:
         batch_time = AverageMeter('Time', ':6.3f')
         losses = AverageMeter('Loss', ':.4e')
 
-        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-                                                    for metric in self.metrics}
-        list_meters = [metric_meters[m] for m in metric_meters]
+        # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+        #                                             for metric in self.metrics}
+        # list_meters = [metric_meters[m] for m in metric_meters]
+
+        # progress = ProgressMeter(
+        #     len(loader),
+        #     [batch_time, losses, *list_meters],
+        #     prefix=f'{eval_type}@Epoch {epoch}: ')
 
         progress = ProgressMeter(
             len(loader),
-            [batch_time, losses, *list_meters],
+            [batch_time, losses],
             prefix=f'{eval_type}@Epoch {epoch}: ')
 
         # switch to evaluate mode
@@ -259,6 +264,10 @@ class Evaluator:
         # plt.show()
 
         targets = torch.cat(targets, dim=0).cpu().numpy()
+
+        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+                                                    for metric in self.metrics}
+        list_meters = [metric_meters[m] for m in metric_meters]
 
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
