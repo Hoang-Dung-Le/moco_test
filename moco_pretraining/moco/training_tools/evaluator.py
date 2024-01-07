@@ -131,6 +131,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
 
     auc_each_class_array = np.array(outAUROC)
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
+    print(result)
     return result
 # @decorator_detach_tensor
 # def computeAUROC(dataPRED,dataGT, classCount=14):
@@ -268,7 +269,8 @@ class Evaluator:
         # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
-
+        print(all_output.shape)
+        print(outputs.shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
             args = [outputs, targets, *self.metrics[metric]['args']]    

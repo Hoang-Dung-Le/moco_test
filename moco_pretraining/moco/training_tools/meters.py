@@ -18,7 +18,7 @@ class AverageMeter(object):
             val = val.item()
 
         self.val = val
-        print("val kjsld: ", val)
+        # print("val kjsld: ", val)
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
