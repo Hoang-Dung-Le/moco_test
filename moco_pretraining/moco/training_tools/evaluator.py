@@ -217,12 +217,12 @@ class Evaluator:
                 # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
                 # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
-                for metric in self.metrics:
-                    args = [output, target, *self.metrics[metric]['args']]    
-                    metric_func = globals()[self.metrics[metric]['func']]
-                    result = metric_func(*args)
+                # for metric in self.metrics:
+                #     args = [output, target, *self.metrics[metric]['args']]    
+                #     metric_func = globals()[self.metrics[metric]['func']]
+                #     result = metric_func(*args)
                     
-                    metric_meters[metric].update(result, images.size(0))
+                #     metric_meters[metric].update(result, images.size(0))
 
                 # measure elapsed time
                 outputs.append(output.cpu())
