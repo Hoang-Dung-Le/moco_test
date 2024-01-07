@@ -170,19 +170,19 @@ class Evaluator:
         batch_time = AverageMeter('Time', ':6.3f')
         losses = AverageMeter('Loss', ':.4e')
 
-        # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-        #                                             for metric in self.metrics}
-        # list_meters = [metric_meters[m] for m in metric_meters]
-
-        # progress = ProgressMeter(
-        #     len(loader),
-        #     [batch_time, losses, *list_meters],
-        #     prefix=f'{eval_type}@Epoch {epoch}: ')
+        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+                                                    for metric in self.metrics}
+        list_meters = [metric_meters[m] for m in metric_meters]
 
         progress = ProgressMeter(
             len(loader),
-            [batch_time, losses],
+            [batch_time, losses, *list_meters],
             prefix=f'{eval_type}@Epoch {epoch}: ')
+
+        # progress = ProgressMeter(
+        #     len(loader),
+        #     [batch_time, losses],
+        #     prefix=f'{eval_type}@Epoch {epoch}: ')
 
         # switch to evaluate mode
         self.model.eval()
@@ -212,12 +212,12 @@ class Evaluator:
                 # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
                 # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
-                # for metric in self.metrics:
-                #     args = [output, target, *self.metrics[metric]['args']]    
-                #     metric_func = globals()[self.metrics[metric]['func']]
-                #     result = metric_func(*args)
+                for metric in self.metrics:
+                    args = [output, target, *self.metrics[metric]['args']]    
+                    metric_func = globals()[self.metrics[metric]['func']]
+                    result = metric_func(*args)
                     
-                #     metric_meters[metric].update(result, images.size(0))
+                    metric_meters[metric].update(result, images.size(0))
 
                 # measure elapsed time
                 outputs.append(output)
@@ -263,11 +263,11 @@ class Evaluator:
         # disp.plot(cmap=plt.cm.Blues)
         # plt.show()
 
-        targets = torch.cat(targets, dim=0).cpu().numpy()
+        # targets = torch.cat(targets, dim=0).cpu().numpy()
 
-        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-                                                    for metric in self.metrics}
-        list_meters = [metric_meters[m] for m in metric_meters]
+        # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+        #                                             for metric in self.metrics}
+        # list_meters = [metric_meters[m] for m in metric_meters]
 
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
