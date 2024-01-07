@@ -115,7 +115,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
             # Apply sigmoid to predictions
             pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
             # print(pred_probs)
-            print(dataGT[:, i].shape)
+            # print(dataGT[:, i].shape)
             # print(dataGT)
             # print("_________________________")
             # print(pred_probs)
@@ -274,7 +274,7 @@ class Evaluator:
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
         print(all_gt.shape)
-        print(outputs.shape)
+        print(np.array(outputs).shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
             args = [outputs, targets, *self.metrics[metric]['args']]    
