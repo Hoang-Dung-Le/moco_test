@@ -274,7 +274,7 @@ class Evaluator:
         #                                             for metric in self.metrics}
         # list_meters = [metric_meters[m] for m in metric_meters]
         print(all_gt.shape)
-        print(np.array(outputs).shape)
+        print(np.array(outputs.cpu()).shape)
         for metric in self.metrics:
             # args = [all_output, all_gt, *self.metrics[metric]['args']]    
             args = [outputs, targets, *self.metrics[metric]['args']]    
