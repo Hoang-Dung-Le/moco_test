@@ -426,7 +426,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         evaluator.evaluate('test', 0)
         return
     
-    evaluator.evaluate('test', 0)
+    evaluator.evaluate('valid', 0)
 
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
@@ -437,7 +437,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         train(train_loader, model, criterion, optimizer, epoch, args, best_metrics)
 
         # evaluator.evaluate('valid', epoch)
-        evaluator.evaluate('test', 0)       # But we should technically not optimize for this
+        evaluator.evaluate('valid', epoch)       # But we should technically not optimize for this
 
         is_best = evaluator.metric_best_vals[args.best_metric] > best_metric_val
         best_metric_val = max(best_metric_val, evaluator.metric_best_vals[args.best_metric])
@@ -457,7 +457,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                 sanity_check(model.state_dict(), args.pretrained,
                              args.semi_supervised)
 
-    evaluator.evaluate('test', epoch + 1)
+    evaluator.evaluate('valid', epoch + 1)
 
 
 def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
