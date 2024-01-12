@@ -235,7 +235,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
 
     # freeze all layers but the last fc
     for name, param in model.named_parameters():
-        if name not in ['fc.weight', 'fc.bias']:
+        if name not in ['classifier.weight', 'classifier.bias']:
             param.requires_grad = False
 
     # num_classes = len(os.listdir(args.val_data)) #assume in imagenet format, so length == num folders/classes
@@ -250,9 +250,9 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     if args.binary:
         model.fc = nn.Linear(model.fc.in_features, num_classes)
     elif args.multi_labels:
-        model.fc = nn.Linear(model.fc.in_features, num_classes)
-    model.fc.weight.data.normal_(mean=0.0, std=0.01)
-    model.fc.bias.data.zero_()
+        model.classifier = nn.Linear(model.classifier.in_features, num_classes)
+    model.classifier.weight.data.normal_(mean=0.0, std=0.01)
+    model.classifier.bias.data.zero_()
 
     # load from pre-trained, before DistributedDataParallel constructor
     if args.pretrained:
