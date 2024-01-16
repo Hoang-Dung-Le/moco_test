@@ -133,9 +133,26 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
 
     auc_each_class_array = np.array(outAUROC)
 
-    # print("each class: ",auc_each_class_array)
+    print("each class: ",auc_each_class_array)
+    # Average over all classes
     result = np.average(auc_each_class_array[auc_each_class_array != 0])
     # print(result)
+    plt.figure(figsize=(10, 8))  # Đặt kích thước hình ảnh chung
+
+    for i in range(len(fprs)):
+        plt.plot(fprs[i], tprs[i], label=f'Class {i} (AUC = {outAUROC[i]:.2f})')
+
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curves for all Classes')
+    plt.legend()
+
+    output_file = f'/content/roc_auc.png'  # Đường dẫn lưu ảnh
+
+    # Lưu hình xuống file
+    plt.savefig(output_file)
+
     return result
 # @decorator_detach_tensor
 # def computeAUROC(dataPRED,dataGT, classCount=14):
