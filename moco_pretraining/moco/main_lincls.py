@@ -422,8 +422,8 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                                       'test': test_loader}, args)
 
     if args.evaluate:
-        # evaluator.evaluate('valid', 0)
-        evaluator.evaluate('test', 0)
+        evaluator.evaluate('valid', 0)
+        # evaluator.evaluate('test', 0)
         return
     
     evaluator.evaluate('valid', 0)
