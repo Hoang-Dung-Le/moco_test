@@ -224,6 +224,7 @@ class Evaluator:
                     target = target.cuda(self.args.gpu, non_blocking=True)
                     all_gt.append(target.cpu())     
                     output = base_model(images)
+                    output = output.view(32, 512)
                     all_output.append(output.cpu())
                     print(output.shape)
                     break
