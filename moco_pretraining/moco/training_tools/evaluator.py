@@ -225,7 +225,8 @@ class Evaluator:
                     if self.args.gpu is not None:
                         images = images.cuda(self.args.gpu, non_blocking=True)
                     target = target.cuda(self.args.gpu, non_blocking=True)
-                    all_gt.append(target.cpu())        
+                    all_gt.append(target.cpu())     
+                    print(images.shape)   
                     output = base_model(images)
                     all_output.append(output.cpu())
                     # print(output.shape)
