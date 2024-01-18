@@ -213,7 +213,8 @@ class Evaluator:
             base_model = nn.Sequential(*list(self.model.children())[:-1])
             # base_model = self.model[:-1]
             print(base_model)
-            print(len(self.model.children()))
+            # print(len(self.model.children()))
+            print(self.model.children())
             all_output = []
             all_gt = []
             outputs = []
