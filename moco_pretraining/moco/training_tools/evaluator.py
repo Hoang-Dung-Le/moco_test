@@ -226,7 +226,7 @@ class Evaluator:
                     all_gt.append(target.cpu())        
                     output = base_model(images)
                     all_output.append(output.cpu())
-                    print(output)
+                    print(output.shape)
                     break
         else:
 
