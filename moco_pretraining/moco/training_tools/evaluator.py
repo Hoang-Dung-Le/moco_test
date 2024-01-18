@@ -6,6 +6,8 @@ import warnings
 import sys
 from sklearn.metrics import roc_auc_score, roc_curve
 
+import pandas as pd
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -226,8 +228,14 @@ class Evaluator:
                     output = base_model(images)
                     output = output.view(32, 512)
                     all_output.append(output.cpu())
-                    print(output.shape)
-                    break
+            df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
+            df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
+
+            # Kết hợp DataFrame thành một DataFrame lớn
+            df_combined = pd.concat([df_output, df_target], axis=1)
+
+            # Lưu DataFrame vào file CSV
+            df_combined.to_csv('output_targets.csv', index=False)
         else:
 
             all_output = []
