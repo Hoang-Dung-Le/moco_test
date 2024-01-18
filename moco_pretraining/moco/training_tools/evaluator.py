@@ -214,7 +214,7 @@ class Evaluator:
             # base_model = self.model[:-1]
             # print(base_model)
             # print(len(self.model.children()))
-            print(*list(self.model.children())[:-1])
+            print(list(self.model.children())[:-1])
             all_output = []
             all_gt = []
             outputs = []
@@ -228,7 +228,7 @@ class Evaluator:
                     all_gt.append(target.cpu())        
                     output = base_model(images)
                     all_output.append(output.cpu())
-                    print(output.shape)
+                    # print(output.shape)
                     break
         else:
 
