@@ -230,7 +230,8 @@ class Evaluator:
                     output = output.squeeze()
                     all_output.append(output.cpu())
             df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
-            df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
+            # df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
+            df_target = pd.DataFrame(torch.cat(all_gt).numpy().stack(), columns=list(range(14)))
 
             # Kết hợp DataFrame thành một DataFrame lớn
             df_combined = pd.concat([df_output, df_target], axis=1)
