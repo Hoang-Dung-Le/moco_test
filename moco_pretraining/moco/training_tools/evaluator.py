@@ -226,6 +226,7 @@ class Evaluator:
                     target = target.cuda(self.args.gpu, non_blocking=True)
                     all_gt.append(target.cpu())     
                     output = base_model(images)
+                    print(output.shape)
                     output = output.view(32, 512)
                     all_output.append(output.cpu())
             df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
