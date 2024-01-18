@@ -213,19 +213,21 @@ class Evaluator:
             base_model = nn.Sequential(*list(self.model.children())[:-1])
             # base_model = self.model[:-1]
             print(base_model)
-            # all_output = []
-            # all_gt = []
-            # outputs = []
-            # targets = []
-            # with torch.no_grad():
-            #     end = time.time()
-            #     for i, (images, target) in enumerate(loader):
-            #         if self.args.gpu is not None:
-            #             images = images.cuda(self.args.gpu, non_blocking=True)
-            #         target = target.cuda(self.args.gpu, non_blocking=True)
-            #         all_gt.append(target.cpu())        
-            #         output = base_model(images)
-            #         all_output.append(output.cpu())
+            all_output = []
+            all_gt = []
+            outputs = []
+            targets = []
+            with torch.no_grad():
+                end = time.time()
+                for i, (images, target) in enumerate(loader):
+                    if self.args.gpu is not None:
+                        images = images.cuda(self.args.gpu, non_blocking=True)
+                    target = target.cuda(self.args.gpu, non_blocking=True)
+                    all_gt.append(target.cpu())        
+                    output = base_model(images)
+                    all_output.append(output.cpu())
+                    print(output)
+                    break
         else:
 
             all_output = []
