@@ -210,8 +210,8 @@ class Evaluator:
         self.model.eval()
         print(self.model)
         if self.args.evaluate:
-            # base_model = nn.Sequential(*list(self.model.children())[:-1])
-            base_model = self.model[:-1]
+            base_model = nn.Sequential(*list(self.model.children())[:-1])
+            # base_model = self.model[:-1]
             print(base_model)
             # all_output = []
             # all_gt = []
