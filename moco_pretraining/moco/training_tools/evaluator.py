@@ -208,11 +208,8 @@ class Evaluator:
 
         # switch to evaluate mode
         self.model.eval()
-        print(self.model)
         if self.args.evaluate:
             base_model = nn.Sequential(*list(self.model.module.children())[:-1])
-            # base_model = self.model[:-1]
-            print(base_model)
             # print(len(self.model.children()))
             # print(list(self.model.children())[:-1])
             all_output = []
@@ -226,10 +223,9 @@ class Evaluator:
                         images = images.cuda(self.args.gpu, non_blocking=True)
                     target = target.cuda(self.args.gpu, non_blocking=True)
                     all_gt.append(target.cpu())     
-                    print(images.shape)   
                     output = base_model(images)
                     all_output.append(output.cpu())
-                    # print(output.shape)
+                    print(output.shape)
                     break
         else:
 
