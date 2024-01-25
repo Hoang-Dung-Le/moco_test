@@ -250,7 +250,10 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     if args.binary:
         model.fc = nn.Linear(model.fc.in_features, num_classes)
     elif args.multi_labels:
-        model.fc = nn.Linear(model.fc.in_features, num_classes)
+        model.fc = nn.Sequential(
+                    nn.Linear(model.fc.in_features, num_classes),
+                    nn.Sigmoid()
+        )
     model.fc.weight.data.normal_(mean=0.0, std=0.01)
     model.fc.bias.data.zero_()
 
