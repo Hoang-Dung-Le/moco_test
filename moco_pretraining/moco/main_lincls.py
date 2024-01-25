@@ -351,7 +351,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     if args.multi_labels:
         # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
         
-        criterion = FocalLoss(gamma=0.7).cuda(args.gpu)
+        criterion = FocalLoss(gamma=0.7, ignore_index=0).cuda(args.gpu)
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
