@@ -312,7 +312,8 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
 
     # define loss function (criterion) and optimizer
     if args.multi_labels:
-        criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+        # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+        criterion = nn.FocalLoss().cuda(args.gpu)
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
