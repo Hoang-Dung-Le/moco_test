@@ -552,7 +552,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
         # output = torch.squeeze(output, 0)
         all_output.append(output.cpu().detach().numpy())
 
-        loss = criterion(output, target)
+        loss = sigmoid_focal_loss(output, target)
 
         # measure accuracy and record loss
         losses.update(loss.item(), images.size(0))
