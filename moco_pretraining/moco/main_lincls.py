@@ -34,6 +34,8 @@ import aihc_utils.image_transform as image_transform
 
 from utils.load_dataset import load_dataset
 
+from pytorchcv.loss import FocalLoss
+
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -165,36 +167,36 @@ best_metric_val = 0
 import warnings
 warnings.filterwarnings('ignore')
 
-class FocalLoss(nn.Module):
-    def __init__(self, gamma=2, alpha=None, size_average=True):
-        super(FocalLoss, self).__init__()
-        self.gamma = gamma
-        self.alpha = alpha
-        if isinstance(alpha,(float,int)): self.alpha = torch.Tensor([alpha,1-alpha])
-        if isinstance(alpha,list): self.alpha = torch.Tensor(alpha)
-        self.size_average = size_average
+# class FocalLoss(nn.Module):
+#     def __init__(self, gamma=2, alpha=None, size_average=True):
+#         super(FocalLoss, self).__init__()
+#         self.gamma = gamma
+#         self.alpha = alpha
+#         if isinstance(alpha,(float,int)): self.alpha = torch.Tensor([alpha,1-alpha])
+#         if isinstance(alpha,list): self.alpha = torch.Tensor(alpha)
+#         self.size_average = size_average
 
-    def forward(self, input, target):
-        if input.dim()>2:
-            input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
-            input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
-            input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
-        target = target.view(-1,1)
+#     def forward(self, input, target):
+#         if input.dim()>2:
+#             input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
+#             input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
+#             input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
+#         target = target.view(-1,1)
 
-        logpt = F.log_softmax(input)
-        logpt = logpt.gather(1,target)
-        logpt = logpt.view(-1)
-        pt = logpt.exp()
+#         logpt = F.log_softmax(input)
+#         logpt = logpt.gather(1,target)
+#         logpt = logpt.view(-1)
+#         pt = logpt.exp()
 
-        if self.alpha is not None:
-            if self.alpha.type()!=input.data.type():
-                self.alpha = self.alpha.type_as(input.data)
-            at = self.alpha.gather(0,target.data.view(-1))
-            logpt = logpt * at
+#         if self.alpha is not None:
+#             if self.alpha.type()!=input.data.type():
+#                 self.alpha = self.alpha.type_as(input.data)
+#             at = self.alpha.gather(0,target.data.view(-1))
+#             logpt = logpt * at
 
-        loss = -1 * (1-pt)**self.gamma * logpt
-        if self.size_average: return loss.mean()
-        else: return loss.sum()
+#         loss = -1 * (1-pt)**self.gamma * logpt
+#         if self.size_average: return loss.mean()
+#         else: return loss.sum()
 
 
 def main():
@@ -346,6 +348,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     # define loss function (criterion) and optimizer
     if args.multi_labels:
         # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+        
         criterion = FocalLoss(gamma=2, alpha=0.5).cuda(args.gpu)
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
