@@ -347,12 +347,12 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
             model = torch.nn.DataParallel(model).cuda()
 
     # define loss function (criterion) and optimizer
-    if args.multi_labels:
-        # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+    # if args.multi_labels:
+    #     # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
         
-        criterion = sigmoid_focal_loss().cuda(args.gpu)
-    else:
-        criterion = nn.CrossEntropyLoss().cuda(args.gpu)
+    #     criterion = sigmoid_focal_loss().cuda(args.gpu)
+    # else:
+    #     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
     # optimize only the linear classifier
     parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
