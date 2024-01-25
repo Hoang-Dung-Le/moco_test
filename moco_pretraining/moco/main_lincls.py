@@ -254,8 +254,8 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                     nn.Linear(model.fc.in_features, num_classes),
                     nn.Sigmoid()
         )
-    model.fc.weight.data.normal_(mean=0.0, std=0.01)
-    model.fc.bias.data.zero_()
+    # model.fc.weight.data.normal_(mean=0.0, std=0.01)
+    # model.fc.bias.data.zero_()
 
     # load from pre-trained, before DistributedDataParallel constructor
     if args.pretrained:
@@ -456,9 +456,9 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                 'best_metric_val': best_metric_val,
                 'optimizer' : optimizer.state_dict(),
             }, is_best)
-            if epoch == args.start_epoch and args.pretrained:
-                sanity_check(model.state_dict(), args.pretrained,
-                             args.semi_supervised)
+            # if epoch == args.start_epoch and args.pretrained:
+            #     sanity_check(model.state_dict(), args.pretrained,
+            #                  args.semi_supervised)
 
     evaluator.evaluate('valid', epoch + 1)
 
