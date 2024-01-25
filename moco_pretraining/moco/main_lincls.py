@@ -35,7 +35,8 @@ import aihc_utils.image_transform as image_transform
 from utils.load_dataset import load_dataset
 
 # from pytorchcv.loss import FocalLoss
-from torchvision.ops import sigmoid_focal_loss
+# from torchvision.ops import sigmoid_focal_loss
+from focal_loss.focal_loss import FocalLoss
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -348,9 +349,9 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
 
     # define loss function (criterion) and optimizer
     if args.multi_labels:
-        criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
+        # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
         
-        # criterion = sigmoid_focal_loss().cuda(args.gpu)
+        criterion = FocalLoss(gamma=0.7).cuda(args.gpu)
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
