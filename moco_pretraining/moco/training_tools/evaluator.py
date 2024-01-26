@@ -231,15 +231,12 @@ class Evaluator:
                     output = output.squeeze()
                     all_output.append(output.cpu())
             df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
-            print(df_output.head())
             # df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
             df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=list(range(14)))
 
-            # Kết hợp DataFrame thành một DataFrame lớn
-            df_combined = pd.concat([df_output, df_target], axis=1)
-
             # Lưu DataFrame vào file CSV
-            df_combined.to_csv('output_targets.csv', index=False)
+            df_output.to_csv('feature.csv', index=False)
+            df_target.to_csv('target.csv', index=False)
         else:
 
             all_output = []
