@@ -36,7 +36,7 @@ from utils.load_dataset import load_dataset
 
 # from pytorchcv.loss import FocalLoss
 # from torchvision.ops import sigmoid_focal_loss
-from focal_loss.focal_loss import FocalLoss
+# from focal_loss.focal_loss import FocalLoss
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -169,36 +169,40 @@ best_metric_val = 0
 import warnings
 warnings.filterwarnings('ignore')
 
-# class FocalLoss(nn.Module):
-#     def __init__(self, gamma=2, alpha=None, size_average=True):
-#         super(FocalLoss, self).__init__()
-#         self.gamma = gamma
-#         self.alpha = alpha
-#         if isinstance(alpha,(float,int)): self.alpha = torch.Tensor([alpha,1-alpha])
-#         if isinstance(alpha,list): self.alpha = torch.Tensor(alpha)
-#         self.size_average = size_average
+class FocalLoss(nn.CrossEntropyLoss):
+    ''' Focal loss for classification tasks on imbalanced datasets '''
 
-#     def forward(self, input, target):
-#         if input.dim()>2:
-#             input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
-#             input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
-#             input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
-#         target = target.view(-1,1)
+    def __init__(self, alpha=None, gamma=1.5, ignore_index=-100, reduction='mean', epsilon=1e-6):
+        super().__init__(weight=alpha, ignore_index=ignore_index, reduction='mean')
+        self.reduction = reduction
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.alpha = alpha
 
-#         logpt = F.log_softmax(input)
-#         logpt = logpt.gather(1,target)
-#         logpt = logpt.view(-1)
-#         pt = logpt.exp()
+    def forward(self, input_, target):
+        # cross_entropy = super().forward(input_, target)
+        # Temporarily mask out ignore index to '0' for valid gather-indices input.
+        # This won't contribute final loss as the cross_entropy contribution
+        # for these would be zero.
+        target = target * (target != self.ignore_index).long()
 
-#         if self.alpha is not None:
-#             if self.alpha.type()!=input.data.type():
-#                 self.alpha = self.alpha.type_as(input.data)
-#             at = self.alpha.gather(0,target.data.view(-1))
-#             logpt = logpt * at
+        # p_t = p if target = 1, p_t = (1-p) if target = 0, where p is the probability of predicting target = 1
 
-#         loss = -1 * (1-pt)**self.gamma * logpt
-#         if self.size_average: return loss.mean()
-#         else: return loss.sum()
+        p_t = input_ * target + (1 - input_) * (1 - target)
+
+        # Loss = -(alpha)( 1 - p_t)^gamma log(p_t), where -log(p_t) is cross entropy => loss = (alpha)(1-p_t)^gamma * cross_entropy (Epsilon added to prevent error with log(0) when class probability is 0)
+        if self.alpha != None:
+            loss = -1 * self.alpha * torch.pow(1 - p_t, self.gamma) * torch.log(p_t + self.epsilon)
+        else:
+            loss = -1 * torch.pow(1 - p_t, self.gamma) * torch.log(p_t + self.epsilon)
+
+
+        if self.reduction == 'mean':
+            return torch.mean(loss)
+        elif self.reduction == 'sum':
+            return torch.sum(loss)
+        else:
+            return loss
 
 
 def main():
@@ -351,7 +355,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     if args.multi_labels:
         # criterion = nn.BCEWithLogitsLoss().cuda(args.gpu)
         
-        criterion = FocalLoss(gamma=0.7, ignore_index=0).cuda(args.gpu)
+        criterion = FocalLoss().cuda(args.gpu)
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
