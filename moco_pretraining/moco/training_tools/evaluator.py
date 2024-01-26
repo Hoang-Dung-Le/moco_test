@@ -235,8 +235,8 @@ class Evaluator:
             df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=list(range(14)))
 
             # Lưu DataFrame vào file CSV
-            df_output.to_csv('feature.csv', index=False)
-            df_target.to_csv('target.csv', index=False)
+            df_output.to_csv(f'feature_{eval_type}.csv', index=False)
+            df_target.to_csv(f'target_{{eval_type}}.csv', index=False)
         else:
 
             all_output = []
