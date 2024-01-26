@@ -236,7 +236,7 @@ class Evaluator:
 
             # Lưu DataFrame vào file CSV
             df_output.to_csv(f'feature_{eval_type}.csv', index=False)
-            df_target.to_csv(f'target_{{eval_type}}.csv', index=False)
+            df_target.to_csv(f'target_{eval_type}.csv', index=False)
         else:
 
             all_output = []
