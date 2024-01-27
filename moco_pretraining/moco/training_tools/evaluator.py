@@ -109,6 +109,7 @@ def compute_auc_binary(output, target):
 
 @decorator_detach_tensor
 def computeAUROC(dataPRED, dataGT, classCount=14):
+
     outAUROC = []
     fprs, tprs, thresholds = [], [], []
     
@@ -233,6 +234,7 @@ class Evaluator:
                     output = base_model(images)
                     # print(output.shape)
                     output = output.squeeze()
+                    
                     all_output.append(output.cpu())
             df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
             # df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
@@ -261,6 +263,9 @@ class Evaluator:
                     # images = torch.unsqueeze(images, 0)
                     # print(images.shape)
                     output = self.model(images)
+                    print("output: ",output)
+                    print("target: ", target)
+                    break
                     # output = torch.squeeze(output, 0)
                     all_output.append(output.cpu())
                     
