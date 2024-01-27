@@ -129,6 +129,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
             print("tpr:", tpr)
             roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
             outAUROC.append(roc_auc)
+            break
 
             # Store FPR, TPR, and thresholds for each class
             fprs.append(fpr)
