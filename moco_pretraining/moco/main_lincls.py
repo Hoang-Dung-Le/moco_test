@@ -276,6 +276,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
 
     # freeze all layers but the last fc
     for name, param in model.named_parameters():
+        print(name, param)
         if name not in ['fc.weight', 'fc.bias']:
             param.requires_grad = False
 
@@ -301,7 +302,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     # load from pre-trained, before DistributedDataParallel constructor
     if args.pretrained:
         if os.path.isfile(args.pretrained):
-            print("=> loading checkpoint '{}'".format(args.pretrained))
+            print("=> loading checkpoint")
             checkpoint = torch.load(args.pretrained, map_location="cpu")
 
             # rename moco pre-trained keys

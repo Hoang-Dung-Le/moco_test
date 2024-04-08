@@ -344,15 +344,15 @@ class Evaluator:
             outputs = torch.cat(outputs, dim=0).cpu().numpy()
             # print(outputs.shape)
             # print(np.array(targets).shape)
-            for metric in self.metrics:
-                # args = [all_output, all_gt, *self.metrics[metric]['args']]    
-                args = [outputs, targets, *self.metrics[metric]['args']]    
-                metric_func = globals()[self.metrics[metric]['func']]
-                result = metric_func(*args)
+            # for metric in self.metrics:
+            #     # args = [all_output, all_gt, *self.metrics[metric]['args']]    
+            #     args = [outputs, targets, *self.metrics[metric]['args']]    
+            #     metric_func = globals()[self.metrics[metric]['func']]
+            #     result = metric_func(*args)
                 
-                metric_meters[metric].update(result, images.size(0))
+            #     metric_meters[metric].update(result, images.size(0))
 
-                self.metric_best_vals[metric] = max(metric_meters[metric].avg,
-                                                    self.metric_best_vals[metric])
+            #     self.metric_best_vals[metric] = max(metric_meters[metric].avg,
+            #                                         self.metric_best_vals[metric])
             print("====================================", self.metrics)
             progress.display(i + 1, summary=True)
