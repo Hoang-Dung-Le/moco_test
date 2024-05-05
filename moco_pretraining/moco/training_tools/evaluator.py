@@ -311,6 +311,7 @@ class Evaluator:
 
         targets = torch.cat(targets, dim=0).cpu().numpy()
         outputs = torch.cat(outputs, dim=0).cpu().numpy()
+        print(computeAUROC(outputs, targets))
         # print(outputs.shape)
         # print(np.array(targets).shape)
         # for metric in self.metrics:
