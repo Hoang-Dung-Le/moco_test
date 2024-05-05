@@ -364,9 +364,9 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     # Data loading code
     # traindir = os.path.join(args.data, 'train')
     # valdir = os.path.join(args.data, 'val')
-    # train_loader = load_dataset(split='train', args=args)
-    # val_loader = load_dataset(split='val', args=args)
-    test_loader = load_dataset(split='test', args=args)
+    train_loader = load_dataset(split='train', args=args)
+    val_loader = load_dataset(split='val', args=args)
+    # test_loader = load_dataset(split='test', args=args)
 
     # traindir = args.train_data
     # valdir = args.val_data
@@ -397,39 +397,43 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
     #     traindir,
     #     transforms.Compose(train_augmentation))
 
-    # if args.distributed:
-    #     train_sampler = torch.utils.data.distributed.DistributedSampler(train_loader)
-    # else:
-    #     train_sampler = None
+    if args.distributed:
+        train_sampler = torch.utils.data.distributed.DistributedSampler(train_loader)
+    else:
+        train_sampler = None
 
-    # train_loader = torch.utils.data.DataLoader(
-    #     train_loader, batch_size=args.batch_size, shuffle=(train_sampler is None),
-    #     num_workers=args.workers, pin_memory=True, sampler=train_sampler)
+    train_loader = torch.utils.data.DataLoader(
+        train_loader, batch_size=args.batch_size, shuffle=(train_sampler is None),
+        num_workers=args.workers, pin_memory=True, sampler=train_sampler)
 
-    # val_loader = torch.utils.data.DataLoader(
-    #     val_loader,
-    #     batch_size=args.batch_size, shuffle=False,
-    #     num_workers=args.workers, pin_memory=True)
-
-    test_loader = torch.utils.data.DataLoader(
-        test_loader,
+    val_loader = torch.utils.data.DataLoader(
+        val_loader,
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-    evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
-                                     {'test': test_loader}, args)
 
-    if args.evaluate:
-        # evaluator.evaluate('valid', 0)
-        evaluator.evaluate('test', 0)
-        return
+    # test_loader = torch.utils.data.DataLoader(
+    #     test_loader,
+    #     batch_size=args.batch_size, shuffle=False,
+    #     num_workers=args.workers, pin_memory=True)
+    
 
     # evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
     #                                  {'train': train_loader,\
     #                                   'valid': val_loader,\
     #                                   'test': test_loader}, args)
+    evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
+                                     {'train': train_loader,\
+                                      'valid': val_loader
+                                      }, args)
     
-    
-    evaluator.evaluate('valid', 0)
+    # evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
+    #                                  {'test': test_loader}, args)
+
+    # if args.evaluate:
+    #     # evaluator.evaluate('valid', 0)
+    #     evaluator.evaluate('test', 0)
+    #     return
+    # evaluator.evaluate('valid', 0)
 
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
@@ -550,6 +554,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
 
 
 def save_checkpoint(checkpoint_folder, state, is_best, filename='checkpoint.pth.tar'):
+    # path = 
     torch.save(state, os.path.join(checkpoint_folder, filename))
     if is_best:
         shutil.copyfile(os.path.join(checkpoint_folder, filename),

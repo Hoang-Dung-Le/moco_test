@@ -202,28 +202,13 @@ class Evaluator:
                 if self.args.gpu is not None:
                     images = images.cuda(self.args.gpu, non_blocking=True)
                 target = target.cuda(self.args.gpu, non_blocking=True)
-                all_gt.append(target.cpu())        
-
-                # compute output
-                # images = torch.unsqueeze(images, 0)
-                # print(images.shape)
+                all_gt.append(target.cpu())
                 output = self.model(images)
-                # output = torch.squeeze(output, 0)
                 all_output.append(output.cpu())
                 
                 loss = self.loss_func(output, target)
                 
-                # JBY: For simplicity do losses first
                 losses.update(loss.item(), images.size(0))
-                # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
-                # for metric in self.metrics:
-                #     args = [output, target, *self.metrics[metric]['args']]    
-                #     metric_func = globals()[self.metrics[metric]['func']]
-                #     result = metric_func(*args)
-                    
-                #     metric_meters[metric].update(result, images.size(0))
-
-                # measure elapsed time
                 outputs.append(output.cpu())
                 targets.append(target.cpu())
                 batch_time.update(time.time() - end)
@@ -231,10 +216,6 @@ class Evaluator:
 
                 if i % self.args.print_freq == 0:
                     progress.display(i)
-
-            # TODO: this should also be done with the ProgressMeter
-            # print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
-            #    .format(top1=top1, top5=top5))
             progress.display(i + 1)
 
         all_output = np.concatenate(all_output)
@@ -285,5 +266,3 @@ class Evaluator:
         targets = torch.cat(targets, dim=0).cpu().numpy()
         outputs = torch.cat(outputs, dim=0).cpu().numpy()
         print(computeAUROC(outputs, targets))
-        print("====================================", self.metrics)
-        progress.display(i + 1, summary=True)
