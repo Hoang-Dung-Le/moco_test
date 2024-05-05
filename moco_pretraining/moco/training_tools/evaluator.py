@@ -235,9 +235,6 @@ class Evaluator:
                 # images = torch.unsqueeze(images, 0)
                 # print(images.shape)
                 output = self.model(images)
-                print("output: ",output)
-                print("target: ", target)
-                break
                 # output = torch.squeeze(output, 0)
                 all_output.append(output.cpu())
                 
