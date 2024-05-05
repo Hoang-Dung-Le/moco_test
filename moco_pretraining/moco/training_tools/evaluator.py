@@ -147,7 +147,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
     plt.title('ROC Curves for all Classes')
     plt.legend()
 
-    output_file = f'/content/roc_auc.png'  # Đường dẫn lưu ảnh
+    output_file = f'./roc_auc.png'  # Đường dẫn lưu ảnh
     plt.savefig(output_file)
     return result
 class Evaluator:
