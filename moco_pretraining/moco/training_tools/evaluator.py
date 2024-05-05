@@ -215,143 +215,116 @@ class Evaluator:
 
         # switch to evaluate mode
         self.model.eval()
-        if self.args.evaluate:
-            base_model = nn.Sequential(*list(self.model.module.children())[:-1])
-            # print(len(self.model.children()))
-            # print(list(self.model.children())[:-1])
-            all_output = []
-            all_gt = []
-            outputs = []
-            targets = []
-            with torch.no_grad():
-                end = time.time()
-                for i, (images, target) in enumerate(loader):
-                    if self.args.gpu is not None:
-                        images = images.cuda(self.args.gpu, non_blocking=True)
-                    target = target.cuda(self.args.gpu, non_blocking=True)
-                    all_gt.append(target.cpu())     
-                    output = base_model(images)
-                    # print(output.shape)
-                    output = output.squeeze()
-                    
-                    all_output.append(output.cpu())
-            df_output = pd.DataFrame(torch.cat(all_output).numpy(), columns=[f'output_{i}' for i in range(all_output[0].shape[1])])
-            # df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=['target'])
-            df_target = pd.DataFrame(torch.cat(all_gt).numpy(), columns=list(range(14)))
+        
 
-            # Lưu DataFrame vào file CSV
-            df_output.to_csv(f'feature_{eval_type}.csv', index=False)
-            df_target.to_csv(f'target_{eval_type}.csv', index=False)
-        else:
+        all_output = []
+        all_gt = []
 
-            all_output = []
-            all_gt = []
+        outputs = []
+        targets = []
 
-            outputs = []
-            targets = []
+        with torch.no_grad():
+            end = time.time()
+            for i, (images, target) in enumerate(loader):
+                if self.args.gpu is not None:
+                    images = images.cuda(self.args.gpu, non_blocking=True)
+                target = target.cuda(self.args.gpu, non_blocking=True)
+                all_gt.append(target.cpu())        
 
-            with torch.no_grad():
-                end = time.time()
-                for i, (images, target) in enumerate(loader):
-                    if self.args.gpu is not None:
-                        images = images.cuda(self.args.gpu, non_blocking=True)
-                    target = target.cuda(self.args.gpu, non_blocking=True)
-                    all_gt.append(target.cpu())        
-
-                    # compute output
-                    # images = torch.unsqueeze(images, 0)
-                    # print(images.shape)
-                    output = self.model(images)
-                    print("output: ",output)
-                    print("target: ", target)
-                    break
-                    # output = torch.squeeze(output, 0)
-                    all_output.append(output.cpu())
-                    
-                    loss = self.loss_func(output, target)
-                    
-                    # JBY: For simplicity do losses first
-                    losses.update(loss.item(), images.size(0))
-                    # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
-                    # for metric in self.metrics:
-                    #     args = [output, target, *self.metrics[metric]['args']]    
-                    #     metric_func = globals()[self.metrics[metric]['func']]
-                    #     result = metric_func(*args)
-                        
-                    #     metric_meters[metric].update(result, images.size(0))
-
-                    # measure elapsed time
-                    outputs.append(output.cpu())
-                    targets.append(target.cpu())
-                    batch_time.update(time.time() - end)
-                    end = time.time()
-
-                    if i % self.args.print_freq == 0:
-                        progress.display(i)
-
-                # TODO: this should also be done with the ProgressMeter
-                # print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
-                #    .format(top1=top1, top5=top5))
-                progress.display(i + 1)
-
-            all_output = np.concatenate(all_output)
-            # print(all_output)
-            # _, preds = torch.max(all_output, 1)
-            # for i in all_output:
-            # y = [torch.max(all_output).item()]
-            # import tensorflow as tf
-            # for tensor in all_output:
-            #     print(torch.Tensor(tensor))
-
-            # y = [torch.argmax(torch.Tensor(tensor)).item() for tensor in all_output]
-            # y = [torch.argmax(torch.tensor([tensor])).item() for tensor in all_output] 
-            
-            all_gt = np.concatenate(all_gt)
-            # print(y)
-            # print("==============================")
-            
-            # print(all_gt)
-            # 1/0
-            # from torchmetrics.functional.classification import BinaryConfusionMatrix
-            # matrix = multiclass_confusion_matrix(all_output, all_gt, num_classes=2)
-            # cf_matrix = confusion_matrix(all_gt, y)
-            # print(cf_matrix)
-            # print(classification_report(all_gt, y))
-            # print(accuracy_score(all_gt, y))
-            # from sklearn.metrics import ConfusionMatrixDisplay
-            # disp = ConfusionMatrixDisplay(confusion_matrix=cf_matrix)
-
-            # disp.plot(cmap=plt.cm.Blues)
-            # plt.show()
-
-            # targets = torch.cat(targets, dim=0).cpu().numpy()
-
-            # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-            #                                             for metric in self.metrics}
-            # list_meters = [metric_meters[m] for m in metric_meters]
-
-            metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
-                                                        for metric in self.metrics}
-            list_meters = [metric_meters[m] for m in metric_meters]
-
-            progress = ProgressMeter(
-                len(loader),
-                [batch_time, losses, *list_meters],
-                prefix=f'{eval_type}@Epoch {epoch}: ')
-
-            targets = torch.cat(targets, dim=0).cpu().numpy()
-            outputs = torch.cat(outputs, dim=0).cpu().numpy()
-            # print(outputs.shape)
-            # print(np.array(targets).shape)
-            # for metric in self.metrics:
-            #     # args = [all_output, all_gt, *self.metrics[metric]['args']]    
-            #     args = [outputs, targets, *self.metrics[metric]['args']]    
-            #     metric_func = globals()[self.metrics[metric]['func']]
-            #     result = metric_func(*args)
+                # compute output
+                # images = torch.unsqueeze(images, 0)
+                # print(images.shape)
+                output = self.model(images)
+                print("output: ",output)
+                print("target: ", target)
+                break
+                # output = torch.squeeze(output, 0)
+                all_output.append(output.cpu())
                 
-            #     metric_meters[metric].update(result, images.size(0))
+                loss = self.loss_func(output, target)
+                
+                # JBY: For simplicity do losses first
+                losses.update(loss.item(), images.size(0))
+                # print(output, "+++++++++++++++++++++++++++++++++++++++",target)
+                # for metric in self.metrics:
+                #     args = [output, target, *self.metrics[metric]['args']]    
+                #     metric_func = globals()[self.metrics[metric]['func']]
+                #     result = metric_func(*args)
+                    
+                #     metric_meters[metric].update(result, images.size(0))
 
-            #     self.metric_best_vals[metric] = max(metric_meters[metric].avg,
-            #                                         self.metric_best_vals[metric])
-            print("====================================", self.metrics)
-            progress.display(i + 1, summary=True)
+                # measure elapsed time
+                outputs.append(output.cpu())
+                targets.append(target.cpu())
+                batch_time.update(time.time() - end)
+                end = time.time()
+
+                if i % self.args.print_freq == 0:
+                    progress.display(i)
+
+            # TODO: this should also be done with the ProgressMeter
+            # print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+            #    .format(top1=top1, top5=top5))
+            progress.display(i + 1)
+
+        all_output = np.concatenate(all_output)
+        # print(all_output)
+        # _, preds = torch.max(all_output, 1)
+        # for i in all_output:
+        # y = [torch.max(all_output).item()]
+        # import tensorflow as tf
+        # for tensor in all_output:
+        #     print(torch.Tensor(tensor))
+
+        # y = [torch.argmax(torch.Tensor(tensor)).item() for tensor in all_output]
+        # y = [torch.argmax(torch.tensor([tensor])).item() for tensor in all_output] 
+        
+        all_gt = np.concatenate(all_gt)
+        # print(y)
+        # print("==============================")
+        
+        # print(all_gt)
+        # 1/0
+        # from torchmetrics.functional.classification import BinaryConfusionMatrix
+        # matrix = multiclass_confusion_matrix(all_output, all_gt, num_classes=2)
+        # cf_matrix = confusion_matrix(all_gt, y)
+        # print(cf_matrix)
+        # print(classification_report(all_gt, y))
+        # print(accuracy_score(all_gt, y))
+        # from sklearn.metrics import ConfusionMatrixDisplay
+        # disp = ConfusionMatrixDisplay(confusion_matrix=cf_matrix)
+
+        # disp.plot(cmap=plt.cm.Blues)
+        # plt.show()
+
+        # targets = torch.cat(targets, dim=0).cpu().numpy()
+
+        # metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+        #                                             for metric in self.metrics}
+        # list_meters = [metric_meters[m] for m in metric_meters]
+
+        metric_meters = {metric: AverageMeter(metric, self.metrics[metric]['format']) \
+                                                    for metric in self.metrics}
+        list_meters = [metric_meters[m] for m in metric_meters]
+
+        progress = ProgressMeter(
+            len(loader),
+            [batch_time, losses, *list_meters],
+            prefix=f'{eval_type}@Epoch {epoch}: ')
+
+        targets = torch.cat(targets, dim=0).cpu().numpy()
+        outputs = torch.cat(outputs, dim=0).cpu().numpy()
+        # print(outputs.shape)
+        # print(np.array(targets).shape)
+        # for metric in self.metrics:
+        #     # args = [all_output, all_gt, *self.metrics[metric]['args']]    
+        #     args = [outputs, targets, *self.metrics[metric]['args']]    
+        #     metric_func = globals()[self.metrics[metric]['func']]
+        #     result = metric_func(*args)
+            
+        #     metric_meters[metric].update(result, images.size(0))
+
+        #     self.metric_best_vals[metric] = max(metric_meters[metric].avg,
+        #                                         self.metric_best_vals[metric])
+        print("====================================", self.metrics)
+        progress.display(i + 1, summary=True)
