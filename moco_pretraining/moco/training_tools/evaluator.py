@@ -118,16 +118,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
             # Apply sigmoid to predictions
             # pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
             pred_probs = dataPRED[:, i]
-            print(pred_probs)
-            # print(pred_probs)
-            # print(dataGT[:, i].shape)
-            # print(dataGT)
-            # print("_________________________")
-            # print(pred_probs)
-            # Calculate ROC curve for each class
             fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
-            print("fpr ", fpr)
-            print("tpr:", tpr)
             roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
             outAUROC.append(roc_auc)
 
@@ -156,27 +147,8 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
     plt.legend()
 
     output_file = f'/content/roc_auc.png'  # Đường dẫn lưu ảnh
-
-    # Lưu hình xuống file
     plt.savefig(output_file)
-
     return result
-# @decorator_detach_tensor
-# def computeAUROC(dataPRED,dataGT, classCount=14):
-#     outAUROC = []
-#     # print(dataGT.shape, dataPRED.shape)
-#     for i in range(classCount):
-#         try:
-    
-#             print("dataGT: ", dataGT)
-#             print("datapred: ", dataPRED)
-#             outAUROC.append(roc_auc_score(dataGT[:, i], dataPRED[:, i]))
-#         except:
-#             outAUROC.append(0.)
-#     print("AUC: ", outAUROC)
-#     return outAUROC
-
-
 class Evaluator:
 
     def __init__(self, model, loss_func, metrics, loaders, args):
@@ -312,17 +284,5 @@ class Evaluator:
         targets = torch.cat(targets, dim=0).cpu().numpy()
         outputs = torch.cat(outputs, dim=0).cpu().numpy()
         print(computeAUROC(outputs, targets))
-        # print(outputs.shape)
-        # print(np.array(targets).shape)
-        # for metric in self.metrics:
-        #     # args = [all_output, all_gt, *self.metrics[metric]['args']]    
-        #     args = [outputs, targets, *self.metrics[metric]['args']]    
-        #     metric_func = globals()[self.metrics[metric]['func']]
-        #     result = metric_func(*args)
-            
-        #     metric_meters[metric].update(result, images.size(0))
-
-        #     self.metric_best_vals[metric] = max(metric_meters[metric].avg,
-        #                                         self.metric_best_vals[metric])
         print("====================================", self.metrics)
         progress.display(i + 1, summary=True)

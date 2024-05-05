@@ -499,8 +499,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
 
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
-        # measure data loading time
-        # print(images.shape)
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
@@ -508,8 +506,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
         target = target.cuda(args.gpu, non_blocking=True)
         all_gt.append(target.cpu().detach().numpy())
 
-        # compute output
-        # images = torch.unsqueeze(images, 0)
         output = model(images)
         # output = torch.squeeze(output, 0)
         all_output.append(output.cpu().detach().numpy())
