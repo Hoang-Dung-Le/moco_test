@@ -604,7 +604,10 @@ def adjust_learning_rate(optimizer, epoch, args):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
 
 
 # Train ImageNet python main_lincls.py -a resnet34 --lr 30.0 --batch-size 32  --dist-url 'tcp://localhost:10001' --multiprocessing-distributed  --world-size 1 --rank 0  --train_data ../../data/5classes_25_Apr/train_set/  --val_data ../../data/5classes_25_Apr/valid_set/  --test_data ../../data/5classes_25_Apr/test_set/ --from-imagenet  --exp-name 5class_ImageNet_lincls_RESNET34_27April >> ./Result_26_April/5class_Resnet34_ImageNet.txt
