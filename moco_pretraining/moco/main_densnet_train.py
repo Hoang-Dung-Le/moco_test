@@ -415,11 +415,6 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         test_loader,
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-
-    # evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
-    #                                  {'train': train_loader,\
-    #                                   'valid': val_loader,\
-    #                                   'test': test_loader}, args)
     evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
                                      {'test': test_loader}, args)
 
@@ -427,6 +422,12 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         # evaluator.evaluate('valid', 0)
         evaluator.evaluate('test', 0)
         return
+
+    # evaluator = eval_tools.Evaluator(model, criterion, best_metrics,\
+    #                                  {'train': train_loader,\
+    #                                   'valid': val_loader,\
+    #                                   'test': test_loader}, args)
+    
     
     evaluator.evaluate('valid', 0)
 
