@@ -555,10 +555,10 @@ def train(train_loader, model, criterion, optimizer, epoch, args, best_metrics):
 
 def save_checkpoint(checkpoint_folder, state, is_best, filename='checkpoint.pth.tar'):
     path = './checkpoint.pth.tar'
-    torch.save(state, os.path.join(checkpoint_folder, filename))
+    torch.save(state, path)
     if is_best:
-        shutil.copyfile(os.path.join(checkpoint_folder, filename),
-                        os.path.join(checkpoint_folder, 'model_best.pth.tar'))
+        shutil.copyfile("./checkpoint.pth.tar",
+                        './model_best.pth.tar')
 
 
 def sanity_check(state_dict, pretrained_weights, semi_supervised):
