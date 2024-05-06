@@ -148,7 +148,7 @@ parser.add_argument('--multi_labels', default=True, type=bool,
 #                 # 'acc@5': {'func': 'topk_acc', 'format': ':6.2f', 'args': [5]},
 #                 #'auc': {'func': 'compute_auc_binary', 'format': ':6.2f', 'args': []}}
 
-best_metrics = {'auc' : {'func': 'computeAUROC', 'format': ':6.3f', 'args': []}}
+best_metrics = {'auc' : {'func': 'computeAUROC', 'format': ':6.4f', 'args': []}}
 
 
 

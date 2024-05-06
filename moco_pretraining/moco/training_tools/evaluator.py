@@ -139,7 +139,7 @@ def computeAUROC(dataPRED, dataGT, classCount=14):
     plt.figure(figsize=(10, 8))  # Đặt kích thước hình ảnh chung
 
     for i in range(len(fprs)):
-        plt.plot(fprs[i], tprs[i], label=f'Class {i} (AUC = {outAUROC[i]:.2f})')
+        plt.plot(fprs[i], tprs[i], label=f'Class {i} (AUC = {outAUROC[i]:.3f})')
 
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlabel('False Positive Rate')
