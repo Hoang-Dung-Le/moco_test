@@ -460,9 +460,9 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
                 'best_metric_val': best_metric_val,
                 'optimizer' : optimizer.state_dict(),
             }, is_best)
-            if epoch == args.start_epoch and args.pretrained:
-                sanity_check(model.state_dict(), args.pretrained,
-                             args.semi_supervised)
+            # if epoch == args.start_epoch and args.pretrained:
+            #     sanity_check(model.state_dict(), args.pretrained,
+            #                  args.semi_supervised)
 
     evaluator.evaluate('valid', epoch + 1)
 
