@@ -439,7 +439,7 @@ def main_worker(gpu, ngpus_per_node, args, checkpoint_folder):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         adjust_learning_rate(optimizer, epoch, args)
-        # evaluator.evaluate('valid', epoch)
+        evaluator.evaluate('valid', epoch)
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch, args, best_metrics)
 
