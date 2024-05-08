@@ -107,62 +107,62 @@ def compute_auc_binary(output, target):
 #     # print(result)
 #     return result
 
-# @decorator_detach_tensor
-# def computeAUROC(dataPRED, dataGT, classCount=14):
-
-#     outAUROC = []
-#     fprs, tprs, thresholds = [], [], []
-    
-#     for i in range(classCount):
-#         try:
-#             # Apply sigmoid to predictions
-#             # print("da chay")
-#             pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
-#             # pred_probs = dataPRED[:, i]
-#             fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
-#             roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
-#             outAUROC.append(roc_auc)
-
-#             # Store FPR, TPR, and thresholds for each class
-#             fprs.append(fpr)
-#             tprs.append(tpr)
-#             thresholds.append(threshold)
-#         except:
-#             outAUROC.append(0.)
-
-#     auc_each_class_array = np.array(outAUROC)
-
-#     print("each class: ",auc_each_class_array)
-#     # Average over all classes
-#     result = np.average(auc_each_class_array[auc_each_class_array != 0])
-#     # print(result)
-#     plt.figure(figsize=(10, 8))  # Đặt kích thước hình ảnh chung
-
-#     for i in range(len(fprs)):
-#         plt.plot(fprs[i], tprs[i], label=f'Class {i} (AUC = {outAUROC[i]:.3f})')
-
-#     plt.plot([0, 1], [0, 1], 'k--')
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title('ROC Curves for all Classes')
-#     plt.legend()
-
-#     output_file = f'./roc_auc.png'  # Đường dẫn lưu ảnh
-#     plt.savefig(output_file)
-#     return result
 @decorator_detach_tensor
-def computeAUROC(dataPRED, dataGT):
-    thresholds = []
-    for i in range(dataPRED.shape[1]):
-        # Tính toán ROC curve
-        pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
-        fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
-        optimal_index = np.argmax(tpr - fpr)
-        optimal_threshold = threshold[optimal_index]
-        print("Threshold value is:", optimal_threshold)
-        thresholds.append(optimal_threshold)
-        print("______________-")
-    return thresholds
+def computeAUROC(dataPRED, dataGT, classCount=14):
+
+    outAUROC = []
+    fprs, tprs, thresholds = [], [], []
+    
+    for i in range(classCount):
+        try:
+            # Apply sigmoid to predictions
+            # print("da chay")
+            pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
+            # pred_probs = dataPRED[:, i]
+            fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
+            roc_auc = roc_auc_score(dataGT[:, i], pred_probs)
+            outAUROC.append(roc_auc)
+
+            # Store FPR, TPR, and thresholds for each class
+            fprs.append(fpr)
+            tprs.append(tpr)
+            thresholds.append(threshold)
+        except:
+            outAUROC.append(0.)
+
+    auc_each_class_array = np.array(outAUROC)
+
+    print("each class: ",auc_each_class_array)
+    # Average over all classes
+    result = np.average(auc_each_class_array[auc_each_class_array != 0])
+    # print(result)
+    plt.figure(figsize=(10, 8))  # Đặt kích thước hình ảnh chung
+
+    for i in range(len(fprs)):
+        plt.plot(fprs[i], tprs[i], label=f'Class {i} (AUC = {outAUROC[i]:.3f})')
+
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curves for all Classes')
+    plt.legend()
+
+    output_file = f'./roc_auc.png'  # Đường dẫn lưu ảnh
+    plt.savefig(output_file)
+    return result
+# @decorator_detach_tensor
+# def computeAUROC(dataPRED, dataGT):
+#     thresholds = []
+#     for i in range(dataPRED.shape[1]):
+#         # Tính toán ROC curve
+#         pred_probs = torch.sigmoid(torch.tensor(dataPRED[:, i]))
+#         fpr, tpr, threshold = roc_curve(dataGT[:, i], pred_probs)
+#         optimal_index = np.argmax(tpr - fpr)
+#         optimal_threshold = threshold[optimal_index]
+#         print("Threshold value is:", optimal_threshold)
+#         thresholds.append(optimal_threshold)
+#         print("______________-")
+#     return thresholds
 class Evaluator:
 
     def __init__(self, model, loss_func, metrics, loaders, args):
